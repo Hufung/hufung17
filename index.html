@@ -46,7 +46,7 @@
             border: 1px solid #00ffcc;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
             color: #ffffff;
-            width: 300px;
+            width: 600px; /* Increased width to accommodate parallel lists */
             pointer-events: auto;
             z-index: 10;
         }
@@ -56,6 +56,16 @@
             margin-bottom: 20px;
             text-align: center;
             text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .lists-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .skills-section, .projects-section {
+            flex: 1;
         }
 
         .skills-list, .projects-list {
@@ -94,24 +104,30 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="overlay-text">Digital Matrix</div>
+    <div class="overlay-text">Hufung</div>
     
     <div class="profile-card">
         <h2 class="profile-title">My Profile</h2>
         <p style="text-align: center; margin-bottom: 20px;">Programmer & Tech Enthusiast</p>
         
-        <h3 style="color: #00ffcc; margin-bottom: 15px;">Languages Learned:</h3>
-        <ul class="skills-list">
-            <li>Python</li>
-            <li>HTML</li>
-            <li>JavaScript</li>
-            <li>SQL</li>
-        </ul>
-        
-        <h3 style="color: #00ffcc; margin: 20px 0 15px;">Projects:</h3>
-        <ul class="projects-list">
-            <li><a href="https://chatro.work/chat.html" target="_blank">Chatro</a></li>
-        </ul>
+        <div class="lists-container">
+            <div class="skills-section">
+                <h3 style="color: #00ffcc; margin-bottom: 15px;">Languages Learned:</h3>
+                <ul class="skills-list">
+                    <li>Python</li>
+                    <li>HTML</li>
+                    <li>JavaScript</li>
+                    <li>SQL</li>
+                </ul>
+            </div>
+            
+            <div class="projects-section">
+                <h3 style="color: #00ffcc; margin-bottom: 15px;">Projects:</h3>
+                <ul class="projects-list">
+                    <li><a href="https://chatro.work/chat.html" target="_blank">Chatro</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>

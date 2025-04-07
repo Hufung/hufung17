@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Interactive Background</title>
+    <title>Advanced Tech Background</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: linear-gradient(45deg, #0d1b2a, #1b263b);
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0d0d1b 100%);
             height: 100vh;
         }
 
@@ -29,82 +29,134 @@
             color: #00ffcc;
             font-family: 'Arial', sans-serif;
             font-size: 48px;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.8),
+                        0 0 30px rgba(0, 255, 204, 0.5);
             pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="overlay-text">Tech Universe</div>
+    <div class="overlay-text">Digital Matrix</div>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Set canvas size
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Particle array
         let particles = [];
-        const particleCount = 100;
+        const particleCount = 150;
 
-        // Mouse position
         let mouse = {
             x: null,
             y: null,
-            radius: 100
+            radius: 120,
+            charge: 1
         };
 
-        // Event listeners for mouse movement
+        // Event listeners
         window.addEventListener('mousemove', (event) => {
             mouse.x = event.x;
             mouse.y = event.y;
         });
 
-        // Particle class
+        window.addEventListener('click', () => {
+            mouse.charge *= -1; // Toggle between attract/repel
+        });
+
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
+                this.z = Math.random() * 1000;
                 this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
+                this.speedX = Math.random() * 1.5 - 0.75;
+                this.speedY = Math.random() * 1.5 - 0.75;
+                this.speedZ = Math.random() * 2 - 1;
+                this.color = `hsl(${Math.random() * 60 + 160}, 100%, 70%)`;
+                this.life = Math.random() * 100 + 50;
+                this.phase = Math.random() * Math.PI * 2;
             }
 
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+                // 3D movement
+                this.z += this.speedZ;
+                if (this.z < 0 || this.z > 1000) {
+                    this.speedZ *= -1;
+                }
 
-                // Bounce off edges
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                // Perspective scaling
+                this.scale = 1000 / (1000 + this.z);
+                this.x += this.speedX * this.scale;
+                this.y += this.speedY * this.scale;
 
-                // Interaction with mouse
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < mouse.radius) {
-                    let force = (mouse.radius - distance) / mouse.radius;
-                    let directionX = dx / distance;
-                    let directionY = dy / distance;
+                // Add orbital movement
+                this.phase += 0.03;
+                this.x += Math.sin(this.phase) * 0.5;
+                this.y += Math.cos(this.phase) * 0.5;
+
+                // Boundary checking
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+                // Mouse interaction
+                if (mouse.x && mouse.y) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    this.x -= directionX * force * 2;
-                    this.y -= directionY * force * 2;
+                    if (distance < mouse.radius) {
+                        let force = (mouse.radius - distance) / mouse.radius;
+                        let directionX = dx / distance;
+                        let directionY = dy / distance;
+                        
+                        this.x -= directionX * force * 3 * mouse.charge;
+                        this.y -= directionY * force * 3 * mouse.charge;
+                    }
+                }
+
+                // Life cycle
+                this.life -= 0.1;
+                if (this.life <= 0) {
+                    this.reset();
                 }
             }
 
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = Math.random() * 1000;
+                this.life = Math.random() * 100 + 50;
+            }
+
             draw() {
-                ctx.fillStyle = 'rgba(0, 255, 204, 0.8)';
+                const alpha = this.life / 150;
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                
+                // Add glow effect
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, this.size * this.scale * 2
+                );
+                gradient.addColorStop(0, `${this.color}${Math.floor(alpha * 255).toString(16)}`);
+                gradient.addColorStop(1, `${this.color}00`);
+                
+                ctx.arc(this.x, this.y, this.size * this.scale * 2, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
                 ctx.fill();
             }
         }
 
-        // Initialize particles
         function init() {
             particles = [];
             for (let i = 0; i < particleCount; i++) {
@@ -112,20 +164,22 @@
             }
         }
 
-        // Animation loop
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw connections between nearby particles
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Complex connections
             for (let i = 0; i < particles.length; i++) {
-                for (let j = i; j < particles.length; j++) {
+                for (let j = i + 1; j < particles.length; j++) {
                     let dx = particles[i].x - particles[j].x;
                     let dy = particles[i].y - particles[j].y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    let dz = particles[i].z - particles[j].z;
+                    let distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-                    if (distance < 100) {
-                        ctx.strokeStyle = `rgba(0, 255, 204, ${1 - distance/100})`;
-                        ctx.lineWidth = 1;
+                    if (distance < 150) {
+                        const alpha = (1 - distance/150) * (particles[i].life/150);
+                        ctx.strokeStyle = `rgba(0, 255, 204, ${alpha})`;
+                        ctx.lineWidth = particles[i].scale;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -134,23 +188,20 @@
                 }
             }
 
-            // Update and draw particles
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
 
             requestAnimationFrame(animate);
         }
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             init();
         });
 
-        // Start animation
         init();
         animate();
     </script>

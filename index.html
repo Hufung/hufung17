@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Tech Background</title>
+    <title>Advanced Tech Background - More Dots</title>
     <style>
         body {
             margin: 0;
@@ -54,7 +54,7 @@
         canvas.height = window.innerHeight;
 
         let particles = [];
-        const particleCount = 150;
+        const particleCount = 500; // Increased from 150 to 500
 
         let mouse = {
             x: null,
@@ -63,14 +63,13 @@
             charge: 1
         };
 
-        // Event listeners
         window.addEventListener('mousemove', (event) => {
             mouse.x = event.x;
             mouse.y = event.y;
         });
 
         window.addEventListener('click', () => {
-            mouse.charge *= -1; // Toggle between attract/repel
+            mouse.charge *= -1;
         });
 
         class Particle {
@@ -78,37 +77,30 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.z = Math.random() * 1000;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 1.5 - 0.75;
-                this.speedY = Math.random() * 1.5 - 0.75;
-                this.speedZ = Math.random() * 2 - 1;
+                this.size = Math.random() * 1.5 + 0.5; // Slightly smaller particles
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.speedZ = Math.random() * 1.5 - 0.75;
                 this.color = `hsl(${Math.random() * 60 + 160}, 100%, 70%)`;
-                this.life = Math.random() * 100 + 50;
+                this.life = Math.random() * 80 + 40;
                 this.phase = Math.random() * Math.PI * 2;
             }
 
             update() {
-                // 3D movement
                 this.z += this.speedZ;
-                if (this.z < 0 || this.z > 1000) {
-                    this.speedZ *= -1;
-                }
+                if (this.z < 0 || this.z > 1000) this.speedZ *= -1;
 
-                // Perspective scaling
                 this.scale = 1000 / (1000 + this.z);
                 this.x += this.speedX * this.scale;
                 this.y += this.speedY * this.scale;
 
-                // Add orbital movement
-                this.phase += 0.03;
-                this.x += Math.sin(this.phase) * 0.5;
-                this.y += Math.cos(this.phase) * 0.5;
+                this.phase += 0.02;
+                this.x += Math.sin(this.phase) * 0.3;
+                this.y += Math.cos(this.phase) * 0.3;
 
-                // Boundary checking
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
 
-                // Mouse interaction
                 if (mouse.x && mouse.y) {
                     let dx = mouse.x - this.x;
                     let dy = mouse.y - this.y;
@@ -119,39 +111,35 @@
                         let directionX = dx / distance;
                         let directionY = dy / distance;
                         
-                        this.x -= directionX * force * 3 * mouse.charge;
-                        this.y -= directionY * force * 3 * mouse.charge;
+                        this.x -= directionX * force * 2 * mouse.charge;
+                        this.y -= directionY * force * 2 * mouse.charge;
                     }
                 }
 
-                // Life cycle
-                this.life -= 0.1;
-                if (this.life <= 0) {
-                    this.reset();
-                }
+                this.life -= 0.15; // Faster lifecycle for more dynamic movement
+                if (this.life <= 0) this.reset();
             }
 
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.z = Math.random() * 1000;
-                this.life = Math.random() * 100 + 50;
+                this.life = Math.random() * 80 + 40;
             }
 
             draw() {
-                const alpha = this.life / 150;
+                const alpha = this.life / 120;
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
                 
-                // Add glow effect
                 const gradient = ctx.createRadialGradient(
                     this.x, this.y, 0,
-                    this.x, this.y, this.size * this.scale * 2
+                    this.x, this.y, this.size * this.scale * 1.5
                 );
                 gradient.addColorStop(0, `${this.color}${Math.floor(alpha * 255).toString(16)}`);
                 gradient.addColorStop(1, `${this.color}00`);
                 
-                ctx.arc(this.x, this.y, this.size * this.scale * 2, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, this.size * this.scale * 1.5, 0, Math.PI * 2);
                 ctx.fillStyle = gradient;
                 ctx.fill();
             }
@@ -165,21 +153,21 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Complex connections
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
+            // Optimized connections - reduced range and sampling
+            for (let i = 0; i < particles.length; i += 2) { // Skip every other particle
+                for (let j = i + 1; j < particles.length; j += 2) {
                     let dx = particles[i].x - particles[j].x;
                     let dy = particles[i].y - particles[j].y;
                     let dz = particles[i].z - particles[j].z;
                     let distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-                    if (distance < 150) {
-                        const alpha = (1 - distance/150) * (particles[i].life/150);
+                    if (distance < 100) { // Reduced connection distance
+                        const alpha = (1 - distance/100) * (particles[i].life/120);
                         ctx.strokeStyle = `rgba(0, 255, 204, ${alpha})`;
-                        ctx.lineWidth = particles[i].scale;
+                        ctx.lineWidth = particles[i].scale * 0.5;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);

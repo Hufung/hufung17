@@ -134,7 +134,8 @@
                 this.speedX = Math.random() * 1.5 - 0.75;
                 this.speedY = Math.random() * 1.5 - 0.75;
                 this.speedZ = Math.random() * 2 - 1;
-                this.color = `hsl(${Math.random() * 60 + 160}, 100%, 70%)`;
+                this.hue = Math.random() * 60 + 160; // Store hue separately
+                this.color = `hsl(${this.hue}, 100%, 70%)`;
                 this.life = Math.random() * 100 + 50;
                 this.phase = Math.random() * Math.PI * 2;
             }
@@ -193,8 +194,8 @@
                     this.x, this.y, 0,
                     this.x, this.y, this.size * this.scale * 2
                 );
-                gradient.addColorStop(0, `${this.color}${Math.floor(alpha * 255).toString(16)}`);
-                gradient.addColorStop(1, `${this.color}00`);
+                gradient.addColorStop(0, `hsla(${this.hue}, 100%, 70%, ${alpha})`);
+                gradient.addColorStop(1, `hsla(${this.hue}, 100%, 70%, 0)`);
                 
                 ctx.arc(this.x, this.y, this.size * this.scale * 2, 0, Math.PI * 2);
                 ctx.fillStyle = gradient;

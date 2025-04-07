@@ -3,156 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Interactive Background</title>
+    <title>Tech Profile</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: linear-gradient(45deg, #0d1b2a, #1b263b);
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: #0a0a23;
         }
 
-        #canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* Interactive Background */
+        #background {
+            position: fixed;
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            background: linear-gradient(45deg, #0a0a23, #1a1a3d);
+            z-index: 1;
         }
 
-        .overlay-text {
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-100vh); }
+        }
+
+        /* Profile Card */
+        .profile-card {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #00ffcc;
-            font-family: 'Arial', sans-serif;
-            font-size: 48px;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
-            pointer-events: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 400px;
+            max-width: 90%;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: block;
+            border: 3px solid #00ffff;
+        }
+
+        .name {
+            color: #ffffff;
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .title {
+            color: #00ffff;
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .bio {
+            color: #e0e0e0;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .social-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .social-links a {
+            color: #00ffff;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #00ffff;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <div class="overlay-text">Tech Universe</div>
+    <div id="background"></div>
+    
+    <div class="profile-card">
+        <!-- Replace with your actual image URL -->
+        <img src="https://via.placeholder.com/150" class="profile-image" alt="Profile Picture">
+        <h1 class="name">Your Name</h1>
+        <h2 class="title">Your Profession/Title</h2>
+        <p class="bio">
+            Add your personal bio here. Describe yourself, your skills, 
+            interests, or anything you'd like to share with visitors.
+        </p>
+        <div class="social-links">
+            <a href="#">Twitter</a>
+            <a href="#">LinkedIn</a>
+            <a href="#">GitHub</a>
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        // Interactive particles background
+        const background = document.getElementById('background');
         
-        // Set canvas size
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        // Particle array
-        let particles = [];
-        const particleCount = 100;
-
-        // Mouse position
-        let mouse = {
-            x: null,
-            y: null,
-            radius: 100
-        };
-
-        // Event listeners for mouse movement
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = event.x;
-            mouse.y = event.y;
-        });
-
-        // Particle class
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Bounce off edges
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-
-                // Interaction with mouse
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < mouse.radius) {
-                    let force = (mouse.radius - distance) / mouse.radius;
-                    let directionX = dx / distance;
-                    let directionY = dy / distance;
-                    
-                    this.x -= directionX * force * 2;
-                    this.y -= directionY * force * 2;
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = 'rgba(0, 255, 204, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Initialize particles
-        function init() {
-            particles = [];
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        // Animation loop
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
             
-            // Draw connections between nearby particles
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i; j < particles.length; j++) {
-                    let dx = particles[i].x - particles[j].x;
-                    let dy = particles[i].y - particles[j].y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 100) {
-                        ctx.strokeStyle = `rgba(0, 255, 204, ${1 - distance/100})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            // Update and draw particles
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-
-            requestAnimationFrame(animate);
+            const size = Math.random() * 5 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            
+            background.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 15000);
         }
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            init();
+        // Generate particles continuously
+        setInterval(createParticle, 200);
+
+        // Make profile card interactive
+        const card = document.querySelector('.profile-card');
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            card.style.transform = `translate(-50%, -50%) 
+                rotateY(${(x - rect.width/2) / 20}deg) 
+                rotateX(${(rect.height/2 - y) / 20}deg)`;
         });
 
-        // Start animation
-        init();
-        animate();
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translate(-50%, -50%)';
+        });
     </script>
 </body>
 </html>

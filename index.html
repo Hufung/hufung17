@@ -58,12 +58,12 @@
             text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
         }
 
-        .skills-list {
+        .skills-list, .projects-list {
             list-style: none;
             padding: 0;
         }
 
-        .skills-list li {
+        .skills-list li, .projects-list li {
             margin: 10px 0;
             padding: 8px;
             background: rgba(0, 255, 204, 0.1);
@@ -71,9 +71,18 @@
             transition: all 0.3s ease;
         }
 
-        .skills-list li:hover {
+        .skills-list li:hover, .projects-list li:hover {
             background: rgba(0, 255, 204, 0.2);
             transform: translateX(10px);
+        }
+
+        .projects-list a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+
+        .projects-list a:hover {
+            text-decoration: underline;
         }
 
         @keyframes pulse {
@@ -85,17 +94,23 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="overlay-text">Hufung</div>
+    <div class="overlay-text">Digital Matrix</div>
     
     <div class="profile-card">
         <h2 class="profile-title">My Profile</h2>
-        <p style="text-align: center; margin-bottom: 20px;">Programmer</p>
+        <p style="text-align: center; margin-bottom: 20px;">Programmer & Tech Enthusiast</p>
+        
         <h3 style="color: #00ffcc; margin-bottom: 15px;">Languages Learned:</h3>
         <ul class="skills-list">
             <li>Python</li>
             <li>HTML</li>
             <li>JavaScript</li>
             <li>SQL</li>
+        </ul>
+        
+        <h3 style="color: #00ffcc; margin: 20px 0 15px;">Projects:</h3>
+        <ul class="projects-list">
+            <li><a href="https://chatro.work/chat.html" target="_blank">Chatro</a></li>
         </ul>
     </div>
 
@@ -134,7 +149,7 @@
                 this.speedX = Math.random() * 1.5 - 0.75;
                 this.speedY = Math.random() * 1.5 - 0.75;
                 this.speedZ = Math.random() * 2 - 1;
-                this.hue = Math.random() * 60 + 160; // Store hue separately
+                this.hue = Math.random() * 60 + 160;
                 this.color = `hsl(${this.hue}, 100%, 70%)`;
                 this.life = Math.random() * 100 + 50;
                 this.phase = Math.random() * Math.PI * 2;

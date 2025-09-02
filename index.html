@@ -50,13 +50,12 @@
             border: 1px solid #00ffcc;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
             color: #ffffff;
-            /* MODIFIED: Changed fixed width to a flexible width */
             width: 90%; 
-            max-width: 800px; /* Set a max-width for larger screens */
+            max-width: 800px;
             pointer-events: auto;
-            z-index: 3; /* Above the canvas and overlay text */
-            font-family: 'Orbitron', sans-serif; /* Futuristic font */
-            animation: scaleIn 0.5s ease-out forwards; /* Entry animation */
+            z-index: 3;
+            font-family: 'Orbitron', sans-serif;
+            animation: scaleIn 0.5s ease-out forwards;
         }
 
         .profile-title {
@@ -132,23 +131,60 @@
             }
         }
 
-        /* ADDED: Media query for mobile responsiveness */
+        /* Media query for mobile portrait responsiveness */
         @media (max-width: 768px) {
             .overlay-text {
                 font-size: 36px;
-                top: 15%; /* Adjust vertical position */
+                top: 15%;
             }
 
             .profile-card {
                 padding: 20px;
-                margin-top: 20px; /* Reduce top margin */
+                margin-top: 20px;
                 width: 90%;
             }
 
             .lists-container {
                 flex-direction: column; /* Stack columns vertically */
-                align-items: flex-start; /* Align items to the start */
-                gap: 25px; /* Increase gap for vertical layout */
+                align-items: flex-start;
+                gap: 25px;
+            }
+        }
+        
+        /* ADDED: Media query for landscape phone display */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body {
+                overflow-y: auto; /* Allow scrolling if content overflows vertically */
+            }
+
+            .overlay-text {
+                font-size: 28px;
+                top: 12%; /* Move text higher */
+            }
+
+            .profile-card {
+                top: 58%; /* Adjust vertical centering */
+                margin-top: 0;
+                padding: 15px; /* Reduce padding to save space */
+                width: 95%; /* Use more of the horizontal space */
+                max-height: 80vh; /* Prevent card from being taller than the screen */
+                overflow-y: auto; /* Allow card content itself to scroll if needed */
+            }
+
+            .lists-container {
+                flex-direction: row; /* Go back to horizontal columns */
+                gap: 15px; /* Reduce gap between columns */
+            }
+            
+            .section-title {
+                 font-size: 1em;
+                 margin-bottom: 10px;
+            }
+
+            .skills-list li, .projects-list li, .certificates-list li {
+                margin: 5px 0;
+                padding: 6px; /* Make list items more compact */
+                font-size: 0.9em;
             }
         }
     </style>
@@ -211,31 +247,27 @@
             charge: 1
         };
 
-        // --- MODIFIED: Added touch support ---
         function updatePointerPosition(event) {
-            if (event.touches) {
+            // Check if it's a touch event
+            if (event.touches && event.touches.length > 0) {
                 mouse.x = event.touches[0].clientX;
                 mouse.y = event.touches[0].clientY;
-            } else {
+            } else if (event.clientX) { // Check if it's a mouse event
                 mouse.x = event.x;
                 mouse.y = event.y;
             }
         }
         
-        // Listen for both mouse and touch movements
         window.addEventListener('mousemove', updatePointerPosition);
         window.addEventListener('touchmove', updatePointerPosition);
 
-        // Reset pointer position when it leaves the screen
-        window.addEventListener('mouseout', () => {
+        function clearPointerPosition() {
             mouse.x = null;
             mouse.y = null;
-        });
-        window.addEventListener('touchend', () => {
-            mouse.x = null;
-            mouse.y = null;
-        });
-        // --- End of touch support modifications ---
+        }
+
+        window.addEventListener('mouseout', clearPointerPosition);
+        window.addEventListener('touchend', clearPointerPosition);
 
         window.addEventListener('click', () => {
             mouse.charge *= -1;

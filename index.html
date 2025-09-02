@@ -6,10 +6,27 @@
     <title>hufung</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* ADDED: Define CSS variables for different display "means" */
+        :root {
+            /* Default (Desktop) Means */
+            --overlay-font-size: 48px;
+            --overlay-top: 20%;
+            --card-padding: 30px;
+            --card-margin-top: 100px;
+            --card-top: 50%;
+            --lists-direction: row;
+            --lists-gap: 20px;
+            --list-item-padding: 8px;
+            --list-item-margin: 10px 0;
+            --list-item-font-size: 1em;
+            --body-overflow-y: hidden;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden; /* Fallback */
+            overflow-y: var(--body-overflow-y); /* Use variable */
             background: radial-gradient(circle at center, #1a1a2e 0%, #0d0d1b 100%);
             height: 100vh;
             font-family: 'Arial', sans-serif;
@@ -21,31 +38,29 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Ensure canvas is behind the profile card */
+            z-index: 1;
         }
 
         .overlay-text {
             position: absolute;
-            top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: #00ffcc;
-            font-size: 48px;
             text-shadow: 0 0 15px rgba(0, 255, 204, 0.8),
                          0 0 30px rgba(0, 255, 204, 0.5);
             pointer-events: none;
             animation: pulse 2s infinite;
-            z-index: 2; /* Above the canvas */
+            z-index: 2;
+            /* Use variables */
+            font-size: var(--overlay-font-size);
+            top: var(--overlay-top);
         }
 
         .profile-card {
             position: absolute;
-            top: 50%;
             left: 50%;
-            margin-top: 100px;  
             transform: translate(-50%, -50%);
             background: rgba(26, 26, 46, 0.9);
-            padding: 30px;
             border-radius: 15px;
             border: 1px solid #00ffcc;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
@@ -56,6 +71,10 @@
             z-index: 3;
             font-family: 'Orbitron', sans-serif;
             animation: scaleIn 0.5s ease-out forwards;
+            /* Use variables */
+            padding: var(--card-padding);
+            margin-top: var(--card-margin-top);
+            top: var(--card-top);
         }
 
         .profile-title {
@@ -68,7 +87,9 @@
         .lists-container {
             display: flex;
             justify-content: space-between;
-            gap: 20px;
+            /* Use variables */
+            flex-direction: var(--lists-direction);
+            gap: var(--lists-gap);
         }
 
         .skills-section, .projects-section, .certificates-section {
@@ -81,11 +102,13 @@
         }
 
         .skills-list li, .projects-list li, .certificates-list li {
-            margin: 10px 0;
-            padding: 8px;
             background: rgba(0, 255, 204, 0.1);
             border-radius: 5px;
             transition: all 0.3s ease;
+            /* Use variables */
+            margin: var(--list-item-margin);
+            padding: var(--list-item-padding);
+            font-size: var(--list-item-font-size);
         }
 
         .skills-list li:hover, .projects-list li:hover, .certificates-list li:hover {
@@ -131,60 +154,40 @@
             }
         }
 
-        /* Media query for mobile portrait responsiveness */
+        /* == Means for Vertical / Portrait Display == */
         @media (max-width: 768px) {
-            .overlay-text {
-                font-size: 36px;
-                top: 15%;
+            :root {
+                --overlay-font-size: 36px;
+                --overlay-top: 15%;
+                --card-padding: 20px;
+                --card-margin-top: 20px;
+                --lists-direction: column;
+                --lists-gap: 25px;
             }
-
-            .profile-card {
-                padding: 20px;
-                margin-top: 20px;
-                width: 90%;
-            }
-
             .lists-container {
-                flex-direction: column; /* Stack columns vertically */
                 align-items: flex-start;
-                gap: 25px;
             }
         }
         
-        /* ADDED: Media query for landscape phone display */
+        /* == Means for Horizontal / Landscape Display == */
         @media (orientation: landscape) and (max-height: 500px) {
-            body {
-                overflow-y: auto; /* Allow scrolling if content overflows vertically */
+            :root {
+                --overlay-font-size: 28px;
+                --overlay-top: 12%;
+                --card-padding: 15px;
+                --card-margin-top: 0;
+                --card-top: 58%;
+                --lists-direction: row;
+                --lists-gap: 15px;
+                --list-item-padding: 6px;
+                --list-item-margin: 5px 0;
+                --list-item-font-size: 0.9em;
+                --body-overflow-y: auto;
             }
-
-            .overlay-text {
-                font-size: 28px;
-                top: 12%; /* Move text higher */
-            }
-
             .profile-card {
-                top: 58%; /* Adjust vertical centering */
-                margin-top: 0;
-                padding: 15px; /* Reduce padding to save space */
-                width: 95%; /* Use more of the horizontal space */
-                max-height: 80vh; /* Prevent card from being taller than the screen */
-                overflow-y: auto; /* Allow card content itself to scroll if needed */
-            }
-
-            .lists-container {
-                flex-direction: row; /* Go back to horizontal columns */
-                gap: 15px; /* Reduce gap between columns */
-            }
-            
-            .section-title {
-                 font-size: 1em;
-                 margin-bottom: 10px;
-            }
-
-            .skills-list li, .projects-list li, .certificates-list li {
-                margin: 5px 0;
-                padding: 6px; /* Make list items more compact */
-                font-size: 0.9em;
+                width: 95%;
+                max-height: 80vh;
+                overflow-y: auto;
             }
         }
     </style>
@@ -231,6 +234,8 @@
     </div>
 
     <script>
+        // The JavaScript does not need changes for this display logic refinement.
+        // It correctly handles pointer events and window resizing.
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
@@ -248,11 +253,10 @@
         };
 
         function updatePointerPosition(event) {
-            // Check if it's a touch event
             if (event.touches && event.touches.length > 0) {
                 mouse.x = event.touches[0].clientX;
                 mouse.y = event.touches[0].clientY;
-            } else if (event.clientX) { // Check if it's a mouse event
+            } else if (event.clientX) {
                 mouse.x = event.x;
                 mouse.y = event.y;
             }

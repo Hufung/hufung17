@@ -32,7 +32,7 @@
             color: #00ffcc;
             font-size: 48px;
             text-shadow: 0 0 15px rgba(0, 255, 204, 0.8),
-                        0 0 30px rgba(0, 255, 204, 0.5);
+                         0 0 30px rgba(0, 255, 204, 0.5);
             pointer-events: none;
             animation: pulse 2s infinite;
             z-index: 2; /* Above the canvas */
@@ -42,7 +42,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            margin-top: 100px; 
+            margin-top: 100px;  
             transform: translate(-50%, -50%);
             background: rgba(26, 26, 46, 0.9);
             padding: 30px;
@@ -50,7 +50,9 @@
             border: 1px solid #00ffcc;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
             color: #ffffff;
-            width: 800px; /* Increased width for three columns */
+            /* MODIFIED: Changed fixed width to a flexible width */
+            width: 90%; 
+            max-width: 800px; /* Set a max-width for larger screens */
             pointer-events: auto;
             z-index: 3; /* Above the canvas and overlay text */
             font-family: 'Orbitron', sans-serif; /* Futuristic font */
@@ -129,6 +131,26 @@
                 opacity: 1;
             }
         }
+
+        /* ADDED: Media query for mobile responsiveness */
+        @media (max-width: 768px) {
+            .overlay-text {
+                font-size: 36px;
+                top: 15%; /* Adjust vertical position */
+            }
+
+            .profile-card {
+                padding: 20px;
+                margin-top: 20px; /* Reduce top margin */
+                width: 90%;
+            }
+
+            .lists-container {
+                flex-direction: column; /* Stack columns vertically */
+                align-items: flex-start; /* Align items to the start */
+                gap: 25px; /* Increase gap for vertical layout */
+            }
+        }
     </style>
     <meta name="google-site-verification" content="qcOFByDf3ybTrCSraFeUdqw3PcoSRuX6nw5DHvyu6fk" />
 </head>
@@ -162,11 +184,11 @@
             <div class="certificates-section">
                 <h3 class="section-title">Certificates:</h3>
                 <ul class="certificates-list">
-                    <li><a href="https://www.sololearn.com/certificates/CC-QZZILY2N" target="_blank">Gnerative AI</a></li>
+                    <li><a href="https://www.sololearn.com/certificates/CC-QZZILY2N" target="_blank">Generative AI</a></li>
                     <li><a href="https://www.sololearn.com/certificates/CC-4BOYY18W" target="_blank">Data Analytics with AI</a></li>
-                    <li><a href="https://www.sololearn.com/certificates/CC-YEG90OR9" target="_blank">Mechine Learning</a></li>
+                    <li><a href="https://www.sololearn.com/certificates/CC-YEG90OR9" target="_blank">Machine Learning</a></li>
                     <li><a href="https://www.sololearn.com/certificates/CC-I4LSLWBB" target="_blank">Web Development</a></li>
-                    <li><a href="https://www.sololearn.com/certificates/CC-WJHZNYXS" target="_blank">Python Develiper</a></li>
+                    <li><a href="https://www.sololearn.com/certificates/CC-WJHZNYXS" target="_blank">Python Developer</a></li>
                 </ul>
             </div>
         </div>
@@ -189,10 +211,31 @@
             charge: 1
         };
 
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = event.x;
-            mouse.y = event.y;
+        // --- MODIFIED: Added touch support ---
+        function updatePointerPosition(event) {
+            if (event.touches) {
+                mouse.x = event.touches[0].clientX;
+                mouse.y = event.touches[0].clientY;
+            } else {
+                mouse.x = event.x;
+                mouse.y = event.y;
+            }
+        }
+        
+        // Listen for both mouse and touch movements
+        window.addEventListener('mousemove', updatePointerPosition);
+        window.addEventListener('touchmove', updatePointerPosition);
+
+        // Reset pointer position when it leaves the screen
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
         });
+        window.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+        // --- End of touch support modifications ---
 
         window.addEventListener('click', () => {
             mouse.charge *= -1;
